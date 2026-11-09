@@ -54,6 +54,7 @@ body[data-ic="3"] .kachel::before{counter-increment:k;content:counter(k,upper-al
 body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;transition:background .3s,color .3s}
 h1,h2,h3{font-family:'Young Serif',Georgia,serif;font-weight:400;line-height:1.08;text-wrap:balance}
 .script{font-family:'Style Script',cursive;font-size:1.35em;line-height:.8;color:var(--start-akz);padding:0 .06em}
+#formular .script{color:var(--pink)}
 p{text-wrap:pretty}
 button{font-family:inherit}
 
@@ -226,8 +227,8 @@ body.auf-start .vertrauen{background:rgba(255,255,255,.12);color:inherit;border-
     <div class="wrap">
       <div class="blase-zeile"><img src="simone.jpg" alt=""><div class="blase">Schön, dass du dabei warst! Das hier hab ich über dich erfahren.</div></div>
       <div class="steckbrief" id="steckbrief"></div>
-      <h2 class="frage">Wie darf ich dich ansprechen?</h2>
-      <p class="hinweis">Dein Steckbrief geht per WhatsApp an mich.</p>
+      <h2 class="frage">Und wer bist <span class="script">du</span>?</h2>
+      <p class="hinweis">Dein Vorname, und dein Steckbrief geht per WhatsApp an mich.</p>
       <form id="form" novalidate>
         <div class="feld"><label for="fName">Dein Vorname</label><input id="fName" autocomplete="given-name" required></div>
         <div class="feld"><label for="fLink">Instagram oder Website <small>(freiwillig)</small></label><input id="fLink" placeholder="@deinname oder deine-seite.de"></div>
