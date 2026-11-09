@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Welche Website passt zu dir?</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B8%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Style+Script&family=Young+Serif&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--pink:#FF0080;--dark:#1A1A2E;--lime:#C6FF3D;--weiss:#FCFCFD;--creme:#FFFAF2;--rosa:#FFE3F1}
+
+/* Neue Mischungen 9.11.: Einstieg und Fragen getrennt */
+body[data-v="D"]{ /* Fragen immer Creme & ruhig */
+  --bg:var(--creme);--fg:var(--dark);--leise:#5a5a6e;
+  --kachel:#fff;--kachel-rand:#ecdfe6;--kachel-fg:var(--dark);
+  --wahl:var(--rosa);--wahl-fg:var(--dark);
+  --knopf:var(--pink);--knopf-fg:#fff;--knopf-rand:var(--pink);
+  --balken:var(--pink);--balken-grund:#f1e6ea;
+  --r:18px;--schatten:0 8px 24px rgba(26,26,46,.08);--randst:1.5px;
+  --blase:#fff;--blase-rand:#ecdfe6;
+}
+body[data-v="D"]{--start-bg:var(--pink);--start-fg:#fff;--start-akz:var(--lime);--sk:var(--lime);--sk-fg:var(--dark)}
+body.auf-start[data-v="D"] .btn{background:var(--sk);color:var(--sk-fg);border-color:var(--sk);box-shadow:none}
+body.auf-start[data-v="D"] .vertrauen{background:rgba(255,255,255,.08)}
+/* F: grosse pinke Kreisflaeche hinter dem Foto */
+
+/* Logo + Bewertung auf dem Einstieg, Varianten 9.11. */
+body.auf-start[data-logo="4"] .kopf{justify-content:center;padding-top:22px}
+body.auf-start[data-logo="4"] .marke{align-items:center;text-align:center}
+body.auf-start[data-logo="4"] .marke-n{font-size:22.6px}
+body.auf-start[data-logo="4"] .marke-z{color:var(--lime);opacity:1;font-size:10px}
+body.auf-start[data-logo="4"] .zurueck{display:none}
+body.auf-start[data-bew="2"] .vertrauen{background:#fff!important;color:var(--dark);border:0;box-shadow:0 10px 30px rgba(26,26,46,.18)}
+
+body[data-knopf="hart"] .btn{box-shadow:5px 5px 0 var(--dark)!important;border:2px solid var(--dark)!important}
+body[data-knopf="hart"] .btn:active{box-shadow:2px 2px 0 var(--dark)!important}
+body[data-knopf="hart"] .kachel{box-shadow:3px 3px 0 var(--dark);border:2px solid var(--dark)}
+body[data-ic="3"] #kacheln{counter-reset:k}
+body[data-ic="3"] .kachel .ic{display:none}
+body[data-ic="3"] .kachel::before{counter-increment:k;content:counter(k,upper-alpha);flex:none;width:28px;height:28px;border-radius:50%;background:var(--pink);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+.eigen-zeile{margin-top:12px}
+.eigen-zeile input{width:100%;font:inherit;font-size:16px;padding:14px 16px;border:2px solid var(--dark);border-radius:var(--r);background:#fff;color:var(--dark);box-shadow:3px 3px 0 var(--dark)}
+.eigen-zeile input:focus{outline:3px solid var(--pink);outline-offset:2px}
+.kachel .ic:empty{display:none}
+#kacheln.zwei{grid-template-columns:1fr 1fr!important;gap:10px}
+#kacheln.zwei .kachel{flex-direction:column;gap:8px;padding:12px;position:relative}
+#kacheln.zwei .kachel b{font-size:14.5px}#kacheln.zwei .kachel small{font-size:12px}
+#kacheln.zwei .kachel .haken{position:absolute;top:10px;right:10px}
+#kacheln.zwei .kachel:last-child:nth-child(odd){grid-column:span 2}
+.detail-label{display:block;font-weight:800;font-size:14px;margin-bottom:6px;color:var(--dark)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;transition:background .3s,color .3s}
+h1,h2,h3{font-family:'Young Serif',Georgia,serif;font-weight:400;line-height:1.08;text-wrap:balance}
+.script{font-family:'Style Script',cursive;font-size:1.35em;line-height:.8;color:var(--start-akz);padding:0 .06em}
+p{text-wrap:pretty}
+button{font-family:inherit}
+
+/* Kopf */
+.kopf{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;max-width:760px;margin:0 auto}
+.marke{display:flex;flex-direction:column;line-height:1;background:none;border:0;color:inherit;cursor:pointer;text-align:left}
+.marke-n{font-family:'Young Serif',serif;font-size:17px}
+.marke-z{margin-top:5px;font-size:9px;font-weight:700;letter-spacing:.34em;text-transform:uppercase;opacity:.7}
+.zurueck{background:none;border:0;color:inherit;font-weight:700;font-size:14px;cursor:pointer;padding:6px 2px;visibility:hidden}
+.zurueck.an{visibility:visible}
+
+.screen{display:none;padding:10px 18px 40px}
+.screen.active{display:block;animation:rein .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes rein{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.wrap{max-width:680px;margin:0 auto}
+
+/* Start */
+body.auf-start{background:var(--start-bg);color:var(--start-fg)}
+#start{text-align:center;padding-top:6vh}
+.kicker{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:7px 12px;border-radius:var(--r);background:var(--start-akz);color:var(--dark);margin-bottom:22px}
+#start h1{font-size:clamp(40px,9vw,72px);margin-bottom:22px}
+#start .foto-start{width:140px;height:140px}
+.lead{font-size:clamp(16px,4vw,19px);line-height:1.55;max-width:520px;margin:0 auto 30px}
+.foto-start{width:108px;height:108px;border-radius:50%;object-fit:cover;border:4px solid var(--start-akz);margin-bottom:18px}
+.klein{font-size:13px;opacity:.75;margin-top:16px}
+
+/* Knöpfe */
+.btn{display:inline-flex;align-items:center;gap:10px;font-weight:800;font-size:17px;padding:16px 28px;border-radius:var(--r);background:var(--knopf);color:var(--knopf-fg);border:var(--randst) solid var(--knopf-rand);box-shadow:var(--schatten);cursor:pointer;text-decoration:none;transition:transform .12s}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(2px)}
+.btn[disabled]{opacity:.4;cursor:default;transform:none}
+
+/* Fortschritt */
+.fort{display:flex;align-items:center;gap:12px;margin:6px 0 22px;font-size:13px;font-weight:700;color:var(--leise)}
+.balken{flex:1;height:8px;border-radius:99px;background:var(--balken-grund);overflow:hidden}
+.balken i{display:block;height:100%;background:var(--balken);border-radius:99px;transition:width .4s ease}
+
+/* Sprechblase */
+.danke-text{margin:22px 4px 22px;font-size:16px;line-height:1.5}
+.blase-zeile{display:flex;align-items:flex-end;gap:12px;margin-bottom:16px}
+.blase-zeile img{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none;border:2.5px solid var(--pink)}
+.blase{position:relative;background:var(--blase);border:var(--randst) solid var(--blase-rand);border-radius:16px 16px 16px 4px;padding:10px 14px;font-size:15px;line-height:1.4;color:var(--fg)}
+.frage{font-size:clamp(26px,6vw,36px);margin-bottom:8px}
+.hinweis{color:var(--leise);font-size:15px;margin-bottom:20px}
+
+/* Kacheln */
+.kacheln{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.kacheln{grid-template-columns:1fr}}
+.kachel{display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--kachel);color:var(--kachel-fg);border:var(--randst) solid var(--kachel-rand);border-radius:var(--r);padding:16px;cursor:pointer;transition:transform .12s,background .15s;box-shadow:var(--schatten)}
+.kachel:hover{transform:translateY(-2px)}
+.kachel .ic{font-size:26px;line-height:1;flex:none}
+.kachel b{display:block;font-size:16px;margin-bottom:3px}
+.kachel small{display:block;font-size:13.5px;line-height:1.4;opacity:.75}
+.kachel.gewaehlt{background:var(--wahl);color:var(--wahl-fg);border-color:var(--wahl-fg)}
+.kachel .haken{margin-left:auto;width:22px;height:22px;flex:none;border-radius:6px;border:2px solid currentColor;opacity:.5;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.kachel.gewaehlt .haken{opacity:1;background:var(--dark);color:var(--lime);border-color:var(--dark)}
+.weiter-zeile{margin-top:22px;text-align:right}
+
+/* Vertrauen */
+.vertrauen{max-width:680px;margin:34px auto 0;padding:18px;border-radius:var(--r);border:var(--randst) dashed var(--kachel-rand);background:var(--kachel);color:var(--kachel-fg)}
+body.auf-start .vertrauen{background:rgba(255,255,255,.12);color:inherit;border-color:currentColor}
+.v-kopf{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px;margin-bottom:8px}
+.v-kopf svg{width:20px;height:20px}
+.sterne{color:#FBBC05;letter-spacing:2px}
+.zitat{font-size:15px;line-height:1.5;font-style:italic}
+.zitat-wer{font-size:13px;margin-top:6px;opacity:.75}
+.v-link{font-size:13px;font-weight:700;color:inherit}
+
+/* Laden */
+#laden{text-align:center;padding-top:16vh}
+.kreis{width:74px;height:74px;margin:0 auto 26px;border-radius:50%;border:7px solid var(--balken-grund);border-top-color:var(--pink);animation:dreh 1s linear infinite}
+@keyframes dreh{to{transform:rotate(360deg)}}
+#laden h2{font-size:26px;margin-bottom:8px}
+#laden p{color:var(--leise)}
+
+/* Steckbrief + Formular */
+.steckbrief{background:var(--kachel);color:var(--kachel-fg);border:var(--randst) solid var(--kachel-rand);border-radius:var(--r);box-shadow:var(--schatten);padding:20px;margin:18px 0 26px}
+.steckbrief h3{font-size:22px;margin-bottom:12px}
+.sb-zeile{display:grid;grid-template-columns:120px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--kachel-rand);font-size:15px;line-height:1.4}
+.sb-zeile span:first-child{font-weight:700;opacity:.7;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding-top:2px}
+@media (max-width:420px){.sb-zeile{grid-template-columns:1fr;gap:2px}}
+.feld{margin-bottom:14px}
+.feld label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+.feld label small{font-weight:400;opacity:.7}
+.feld input,.feld textarea{width:100%;font:inherit;font-size:16px;padding:13px 14px;border-radius:var(--r);border:var(--randst) solid var(--kachel-rand);background:var(--kachel);color:var(--kachel-fg)}
+.feld textarea{min-height:84px;resize:vertical}
+.feld input:focus,.feld textarea:focus{outline:3px solid var(--pink);outline-offset:1px}
+.datenschutz{font-size:13px;color:var(--leise);margin-top:12px;line-height:1.5}
+
+/* Danke */
+#danke{text-align:center;padding-top:6vh}
+#danke h2{font-size:clamp(34px,8vw,52px);margin:14px 0 16px}
+#danke .lead{margin-bottom:24px}
+.schritte{text-align:left;max-width:460px;margin:0 auto 26px;display:grid;gap:10px}
+.schritt{display:flex;gap:12px;align-items:flex-start;background:var(--kachel);color:var(--kachel-fg);border:var(--randst) solid var(--kachel-rand);border-radius:var(--r);padding:12px 14px;font-size:15px;line-height:1.45}
+.schritt b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--pink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px}
+
+/* QR-Fenster am Laptop */
+.lp-hinter{position:fixed;inset:0;z-index:60;background:rgba(26,26,46,.78);display:none;align-items:center;justify-content:center;padding:18px}
+.lp-hinter.auf{display:flex}
+.lp{position:relative;background:#fff;color:var(--dark);border-radius:16px;padding:28px 26px 24px;max-width:370px;width:100%;text-align:center}
+.lp h3{font-size:24px;margin-bottom:8px}
+.lp p{font-size:14px;line-height:1.5;margin-bottom:14px}
+.lp .qr{display:inline-block;padding:10px;border:2px solid var(--dark);border-radius:10px;margin-bottom:14px}
+.lp .qr img,.lp .qr canvas{display:block;width:180px;height:180px}
+.lp .oder{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-bottom:10px}
+.lp .zu{position:absolute;top:8px;right:12px;background:none;border:0;font-size:26px;cursor:pointer;color:var(--dark)}
+.lp .btn{font-size:15px;padding:12px 20px;background:var(--pink);color:#fff;border-color:var(--pink);box-shadow:none}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body data-v="D" data-knopf="hart" data-ic="3" data-logo="4" data-bew="2" class="auf-start">
+
+
+<div class="lp-hinter" id="lpHinter">
+  <div class="lp" role="dialog" aria-label="Weiter am Handy">
+    <button class="zu" id="lpZu" aria-label="Schließen">×</button>
+    <h3>Weiter am Handy</h3>
+    <p>Scanne den Code mit deiner Handykamera. WhatsApp öffnet sich mit deinem fertigen Steckbrief.</p>
+    <div class="qr" id="lpQr"></div>
+    <p class="oder">oder am Laptop</p>
+    <a class="btn" id="lpWeb" href="#" target="_blank" rel="noopener">Per WhatsApp Web</a>
+  </div>
+</div>
+
+<header class="kopf">
+  <button class="zurueck" id="zurueck" aria-label="Eine Frage zurück">← Zurück</button>
+  <button class="marke" id="markeStart" aria-label="Zum Anfang"><span class="marke-n">Simone Katz🌸</span><span class="marke-z">Webdesign</span></button>
+</header>
+
+<main>
+  <!-- START -->
+  <section class="screen active" id="start">
+    <div class="wrap">
+      <img class="foto-start" src="simone.jpg" alt="Simone Katz mit limegrüner Brille">
+      <div><span class="kicker">6 Fragen · 1 Minute</span></div>
+      <h1>Welche Website passt zu <span class="script">dir</span>?</h1>
+      <p class="lead">Am Ende wartet dein Website-Steckbrief.</p>
+      <button class="btn" id="los">Los geht's →</button>
+      <p class="klein">Ohne Anmeldung.</p>
+    </div>
+  </section>
+
+  <!-- FRAGEN werden per Skript gebaut -->
+  <section class="screen" id="frage">
+    <div class="wrap">
+      <div class="fort"><span id="fortText">Frage 1 von 6</span><div class="balken"><i id="fortBalken" style="width:16%"></i></div></div>
+      <div class="blase-zeile"><img src="simone.jpg" alt=""><div class="blase" id="blase"></div></div>
+      <h2 class="frage" id="frageText"></h2>
+      <p class="hinweis" id="frageHinweis"></p>
+      <div class="kacheln" id="kacheln"></div>
+      <div class="eigen-zeile" id="eigenZeile" hidden><input id="eigenWort" placeholder="z. B. verspielt, klar, mystisch" maxlength="40"></div>
+      <div class="weiter-zeile" id="weiterZeile" hidden><button class="btn" id="weiter" disabled>Weiter →</button></div>
+    </div>
+  </section>
+
+  <!-- LADEN -->
+  <section class="screen" id="laden">
+    <div class="wrap">
+      <div class="kreis" aria-hidden="true"></div>
+      <h2>Dein Website-Steckbrief wird erstellt …</h2>
+      <p>Einen kleinen Moment.</p>
+    </div>
+  </section>
+
+  <!-- STECKBRIEF + FORMULAR -->
+  <section class="screen" id="formular">
+    <div class="wrap">
+      <div class="blase-zeile"><img src="simone.jpg" alt=""><div class="blase">Schön, dass du dabei warst! Das hier hab ich über dich erfahren.</div></div>
+      <div class="steckbrief" id="steckbrief"></div>
+      <h2 class="frage">Wie darf ich dich ansprechen?</h2>
+      <p class="hinweis">Dein Steckbrief geht per WhatsApp an mich.</p>
+      <form id="form" novalidate>
+        <div class="feld"><label for="fName">Dein Vorname</label><input id="fName" autocomplete="given-name" required></div>
+        <div class="feld"><label for="fLink">Instagram oder Website <small>(freiwillig)</small></label><input id="fLink" placeholder="@deinname oder deine-seite.de"></div>
+        <button class="btn" id="senden" type="submit" disabled>Steckbrief an Simone schicken →</button>
+        <p class="datenschutz">Deine Angaben landen nur in deiner WhatsApp-Nachricht an mich. Diese Seite speichert nichts.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- DANKE -->
+  <section class="screen" id="danke">
+    <div class="wrap">
+      <img class="foto-start" src="simone.jpg" alt="Simone Katz">
+      <h2>Fast geschafft, <span class="script" id="dankeName">du</span>!</h2>
+      <p class="lead"><b>Deine Nachricht steht schon in WhatsApp.<br>Drück dort nur noch auf Senden.</b></p>
+      <p class="lead danke-text">Freu mich sehr, dich und dein Herzensbusiness kennenzulernen! Deinen Steckbrief schau ich mir in Ruhe an und schreib dir dann persönlich zurück.</p>
+      <a class="btn" id="nochmal" href="#" target="_blank" rel="noopener">WhatsApp nicht aufgegangen? Hier öffnen</a>
+    </div>
+  </section>
+
+  <!-- VERTRAUEN unter Start und Fragen -->
+  <aside class="vertrauen" id="vertrauen">
+    <div class="v-kopf">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.1C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.6 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.8-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.4 2.3-6.2 0-11.5-4.1-13.4-9.9l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>
+      <span class="sterne">★★★★★</span> 5,0 bei Google
+    </div>
+    <p class="zitat">„Man merkt einfach, dass sie sich richtig in ein Projekt reinfuchst, mitdenkt und nicht einfach nur etwas ‚abarbeitet‘.“</p>
+    <p class="zitat-wer">Maria Mosca · Inhaberin Mary Beauty</p>
+    <a class="v-link" href="https://g.page/r/CYLOB34p_1O_ECE" target="_blank" rel="noopener">Alle Bewertungen auf Google ansehen →</a>
+  </aside>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const NUMMER='491726013500';
+
+/* ===== Die 6 Fragen ===== */
+const FRAGEN=[
+ {k:'website', kurz:'Website heute', multi:true, solo:['Noch nicht','Nur Instagram & Co.'], blase:'Erzähl mal, wo stehst du?',
+  text:'Hast du schon eine Website?', hinweis:'',
+  opt:[['','Noch nicht',''],['','Nur Instagram & Co.',''],['','Ja, selbst gebaut',''],['','Ja, möchte ein Update','']]},
+ {k:'schmerz', kurz:'Was bremst', multi:true, max:2, min:2, blase:'Jetzt mal ehrlich.',
+  text:'Was bremst dich gerade?', hinweis:'Wähl die zwei, die dich am meisten betreffen.',
+  opt:[['','Technik ist nicht meins',''],['','Zu wenig Zeit dafür',''],['','Passt nicht mehr zu mir',''],['','Online kaum zu finden',''],['','Weiß nicht, wo anfangen','']]},
+ {k:'herz', kurz:'Herzenssache', detail:{label:'Was genau machst du?', ph:'z. B. Lash-Lifting und Brows', pflicht:['Etwas ganz anderes']}, blase:'Jetzt zu deinem Business.',
+  text:'Wofür schlägt dein Herz?', hinweis:'Wähl aus und erzähl kurz, was du machst.',
+  opt:[['','Beauty & Styling',''],['','Medical Beauty',''],['','Wellness & Spa',''],['','Etwas ganz anderes','Auch das passt!']]},
+ {k:'gefuehl', kurz:'Wirkung', multi:true, max:2, eigen:'Passt nicht? Dein Wort', blase:'Deine Website, so persönlich wie du.',
+  text:'Wie soll deine Website wirken?', hinweis:'Wähl bis zu zwei.',
+  opt:[['','Herzlich & warm',''],
+       ['','Elegant & edel',''],
+       ['','Natürlich & geerdet',''],
+       ['','Lebendig & kreativ',''],
+       ['','Passt nicht? Dein Wort','']]},
+ {k:'extras', kurz:'Wünsche', multi:true, leerOk:true, zwei:true, blase:'Kreuz an, was dir gefällt.',
+  text:'Was wünschst du dir noch?', hinweis:'Mehrere möglich.',
+  opt:[['','Online-Termine','Direkt über die Seite buchen.'],
+       ['','Google-Profil aufpolieren','Mehr als Name und Adresse.'],
+       ['','Kundenstimmen','Bewertungen auf der Seite.'],
+       ['','Logo neu oder auffrischen','Damit alles zusammenpasst.'],
+       ['','Texte übernehme ich','Kein Schreibstress für dich.'],
+       ['','Pflege danach','Jemand kümmert sich darum.'],
+       ['','Ein Quiz wie dieses','Für deine eigenen Kundinnen.']]},
+ {k:'start', kurz:'Start', blase:'Noch eine Frage, dann kommt dein Steckbrief.',
+  text:"Wann geht’s los?", hinweis:'',
+  opt:[['','Sofort',''],['','In 1 bis 3 Monaten',''],['','In 3 bis 6 Monaten',''],['','Bin erst mal neugierig','']]}
+];
+const antw={}; let idx=0; let verlauf=[];
+
+function zeige(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+  document.body.classList.toggle('auf-start', id==='start');
+  $('vertrauen').style.display = (id==='formular') ? '' : 'none';
+  $('zurueck').classList.toggle('an', id==='frage'||id==='formular');
+  scrollTo({top:0});
+}
+function frage(i){
+  idx=i; const f=FRAGEN[i];
+  $('fortText').textContent=`Frage ${i+1} von ${FRAGEN.length}`;
+  $('fortBalken').style.width=((i+1)/FRAGEN.length*100)+'%';
+  $('blase').textContent=f.blase; $('frageText').textContent=f.text; $('frageHinweis').textContent=f.hinweis;
+  const box=$('kacheln'); box.innerHTML='';
+  f.opt.forEach(([ic,t,s])=>{
+    const b=document.createElement('button'); b.type='button'; b.className='kachel';
+    const gew = f.multi ? (antw[f.k]||[]).includes(t) : antw[f.k]===t;
+    if(gew) b.classList.add('gewaehlt');
+    b.innerHTML=`<span class="ic">${ic}</span><span><b>${t}</b>${s?`<small>${s}</small>`:''}</span>${f.multi?'<span class="haken">✓</span>':''}`;
+    b.onclick=()=>waehle(f,t,b);
+    box.appendChild(b);
+  });
+  if(f.detail && antw[f.k]){ const sel=[...box.children].find(x=>x.classList.contains('gewaehlt'));
+    const d=document.createElement('div'); d.className='eigen-zeile';
+    d.innerHTML='<label for="detailWort" class="detail-label">'+f.detail.label+'</label><input id="detailWort" placeholder="'+f.detail.ph+'" maxlength="60">';
+    sel.after(d); const inp=d.querySelector('input'); inp.value=antw[f.k+'Detail']||'';
+    inp.oninput=()=>{ antw[f.k+'Detail']=inp.value; pruefeWeiter(f); }; setTimeout(()=>inp.focus(),60); }
+  $('weiterZeile').hidden=!(f.multi||f.detail);
+  const mitEigen=f.eigen && (antw[f.k]||[]).includes(f.eigen);
+  $('eigenZeile').hidden=!mitEigen;
+  $('eigenWort').value=antw[f.k+'Eigen']||'';
+  $('kacheln').classList.toggle('zwei',!!f.zwei);
+  pruefeWeiter(f);
+  zeige('frage');
+}
+function pruefeWeiter(f){
+  if(f.detail){ const a=antw[f.k]; $('weiter').disabled=!a||(f.detail.pflicht.includes(a)&&!(antw[f.k+'Detail']||'').trim()); return; }
+  const l=antw[f.k]||[]; const leerEigen=f.eigen && l.includes(f.eigen) && !(antw[f.k+'Eigen']||'').trim();
+  $('weiter').disabled=(!l.length&&!f.leerOk)||leerEigen||(f.min&&l.length<f.min);
+}
+function anzeige(f){ if(f.detail){ const d=(antw[f.k+'Detail']||'').trim(); return antw[f.k]+(d?' · '+d:''); } let a=antw[f.k]; if(f.multi&&(!a||!a.length)) return 'keine'; if(!Array.isArray(a)) return a; if(f.eigen) a=a.map(x=>x===f.eigen?(antw[f.k+'Eigen']||'').trim():x); return a.join(', '); }
+function waehle(f,t,b){
+  if(f.multi){
+    let l=antw[f.k]||[];
+    const nichts='Erst mal nichts davon';
+    if(f.solo && f.solo.includes(t)){ antw[f.k]=[t]; b.classList.add('gewaehlt'); setTimeout(weiter,280); return; }
+    if(f.solo) l=l.filter(x=>!f.solo.includes(x));
+    if(t===nichts) l = l.includes(t)?[]:[t];
+    else { l=l.filter(x=>x!==nichts); l = l.includes(t)? l.filter(x=>x!==t) : [...l,t]; }
+    if(f.max && l.length>f.max) l=l.slice(-f.max);
+    antw[f.k]=l; frage(idx); if(t===f.eigen && l.includes(t)) $('eigenWort').focus(); return;
+  }
+  if(f.detail){ antw[f.k]=t; frage(idx); return; }
+  antw[f.k]=t; b.classList.add('gewaehlt');
+  setTimeout(weiter,280);
+}
+function weiter(){
+  verlauf.push(idx);
+  if(idx<FRAGEN.length-1) frage(idx+1);
+  else { zeige('laden'); setTimeout(()=>{ steckbrief(); zeige('formular'); },2400); }
+}
+function steckbrief(){
+  let h='<h3>Dein Website-Steckbrief</h3>';
+  FRAGEN.forEach(f=>{ const a=antw[f.k]; h+=`<div class="sb-zeile"><span>${f.kurz}</span><span>${anzeige(f)}</span></div>`; });
+  $('steckbrief').innerHTML=h;
+}
+function nachricht(){
+  const z=[`Hallo Simone 🌸`,`hier ist mein Website-Steckbrief:`,``];
+  FRAGEN.forEach(f=>{ const a=antw[f.k]; z.push(`• ${f.kurz}: ${anzeige(f)}`); });
+  z.push('', `Name: ${$('fName').value.trim()}`);
+  if($('fLink').value.trim()) z.push(`Insta/Website: ${$('fLink').value.trim()}`);
+  z.push('', 'Ich freu mich auf unser Kennenlerngespräch!');
+  return z.join('\n');
+}
+function istLaptop(){ return matchMedia('(hover: hover) and (pointer: fine)').matches && innerWidth>820; }
+
+/* Ereignisse */
+$('los').onclick=()=>{ verlauf=[]; frage(0); };
+$('weiter').onclick=weiter;
+$('eigenWort').oninput=()=>{ antw[FRAGEN[idx].k+'Eigen']=$('eigenWort').value; pruefeWeiter(FRAGEN[idx]); };
+$('markeStart').onclick=()=>zeige('start');
+$('zurueck').onclick=()=>{
+  if($('formular').classList.contains('active')) { frage(FRAGEN.length-1); verlauf.pop(); return; }
+  if(verlauf.length){ frage(verlauf.pop()); } else zeige('start');
+};
+$('fName').oninput=()=>{ $('senden').disabled=!$('fName').value.trim(); };
+$('form').onsubmit=e=>{
+  e.preventDefault(); if(!$('fName').value.trim()) return;
+  const t=encodeURIComponent(nachricht());
+  const wa=`https://wa.me/${NUMMER}?text=${t}`, web=`https://web.whatsapp.com/send?phone=${NUMMER}&text=${t}`;
+  $('dankeName').textContent=$('fName').value.trim();
+  $('nochmal').href=wa; zeige('danke');
+  if(istLaptop()){
+    const box=$('lpQr'); box.innerHTML='';
+    if(window.QRCode) new QRCode(box,{text:wa,width:180,height:180,colorDark:'#1A1A2E',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.L});
+    else box.style.display='none';
+    $('lpWeb').href=web; $('lpHinter').classList.add('auf');
+  } else { location.href=wa; }
+};
+$('nochmal').onclick=e=>{ if(istLaptop()){ e.preventDefault(); $('lpHinter').classList.add('auf'); } };
+$('lpZu').onclick=()=>$('lpHinter').classList.remove('auf');
+$('lpHinter').onclick=e=>{ if(e.target.id==='lpHinter') $('lpHinter').classList.remove('auf'); };
+addEventListener('keydown',e=>{ if(e.key==='Escape') $('lpHinter').classList.remove('auf'); });
+
+
+</script>
+</body>
+</html>
