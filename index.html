@@ -132,11 +132,17 @@ body.auf-start .vertrauen{background:rgba(255,255,255,.12);color:inherit;border-
 #laden p{color:var(--leise)}
 
 /* Steckbrief + Formular */
-.steckbrief{background:var(--kachel);color:var(--kachel-fg);border:var(--randst) solid var(--kachel-rand);border-radius:var(--r);box-shadow:var(--schatten);padding:20px;margin:18px 0 26px}
-.steckbrief h3{font-size:22px;margin-bottom:12px}
-.sb-zeile{display:grid;grid-template-columns:120px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--kachel-rand);font-size:15px;line-height:1.4}
-.sb-zeile span:first-child{font-weight:700;opacity:.7;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding-top:2px}
-@media (max-width:420px){.sb-zeile{grid-template-columns:1fr;gap:2px}}
+.steckbrief{background:#fff;color:var(--dark);border:2px solid var(--dark);border-radius:18px;box-shadow:6px 6px 0 var(--pink);padding:20px 20px 16px;margin:18px 0 30px}
+.steckbrief h3{font-size:24px;line-height:1;margin:0 0 16px}
+.steckbrief h3 .script{color:var(--pink);font-size:1.45em}
+.sb-punkt{margin:0 0 13px}
+.sb-l{display:block;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--pink);margin-bottom:2px}
+.sb-a{font-family:'Young Serif',Georgia,serif;font-size:21px;line-height:1.2}
+.sb-a span{background:linear-gradient(transparent 58%,var(--lime) 58%);padding:0 2px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.sb-gruss{display:flex;align-items:center;gap:12px;margin-top:16px;padding-top:14px;border-top:1.5px dashed #ecdfe6}
+.sb-gruss img{width:54px;height:54px;border-radius:50%;object-fit:cover;border:2.5px solid var(--pink);flex:none}
+.sb-gruss .t{font-size:15px;line-height:1.3}
+.sb-gruss .n{font-family:'Style Script',cursive;color:var(--pink);font-size:32px;line-height:1}
 .feld{margin-bottom:14px}
 .feld label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
 .feld label small{font-weight:400;opacity:.7}
@@ -338,7 +344,7 @@ function pruefeWeiter(f){
   const l=antw[f.k]||[]; const leerEigen=f.eigen && l.includes(f.eigen) && !(antw[f.k+'Eigen']||'').trim();
   $('weiter').disabled=(!l.length&&!f.leerOk)||leerEigen||(f.min&&l.length<f.min);
 }
-function anzeige(f){ if(f.detail){ const d=(antw[f.k+'Detail']||'').trim(); return antw[f.k]+(d?' · '+d:''); } let a=antw[f.k]; if(f.multi&&(!a||!a.length)) return 'keine'; if(!Array.isArray(a)) return a; if(f.eigen) a=a.map(x=>x===f.eigen?(antw[f.k+'Eigen']||'').trim():x); return a.join(', '); }
+function anzeige(f,sep=', '){ if(f.detail){ const d=(antw[f.k+'Detail']||'').trim(); return antw[f.k]+(d?' · '+d:''); } let a=antw[f.k]; if(f.multi&&(!a||!a.length)) return 'keine'; if(!Array.isArray(a)) return a; if(f.eigen) a=a.map(x=>x===f.eigen?(antw[f.k+'Eigen']||'').trim():x); return a.join(sep); }
 function waehle(f,t,b){
   if(f.multi){
     let l=antw[f.k]||[];
@@ -360,8 +366,11 @@ function weiter(){
   else { zeige('laden'); setTimeout(()=>{ steckbrief(); zeige('formular'); },2400); }
 }
 function steckbrief(){
-  let h='<h3>Dein Website-Steckbrief</h3>';
-  FRAGEN.forEach(f=>{ const a=antw[f.k]; h+=`<div class="sb-zeile"><span>${f.kurz}</span><span>${anzeige(f)}</span></div>`; });
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let h='<h3>Dein Website-<span class="script">Steckbrief</span></h3>';
+  const reihe=[...FRAGEN.filter(f=>f.k==='herz'),...FRAGEN.filter(f=>f.k!=='herz')];
+  reihe.forEach(f=>{ h+=`<div class="sb-punkt"><span class="sb-l">${esc(f.kurz)}</span><span class="sb-a"><span>${esc(anzeige(f,' · '))}</span></span></div>`; });
+  h+='<div class="sb-gruss"><img src="simone.jpg" alt="Simone Katz"><div class="t">Schick ihn mir, ich freu mich drauf!<br><span class="n">Simone</span></div></div>';
   $('steckbrief').innerHTML=h;
 }
 function nachricht(){
