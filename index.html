@@ -100,6 +100,8 @@ body.auf-start{background:var(--start-bg);color:var(--start-fg)}
 .blase{position:relative;background:var(--blase);border:var(--randst) solid var(--blase-rand);border-radius:16px 16px 16px 4px;padding:10px 14px;font-size:15px;line-height:1.4;color:var(--fg)}
 .frage{font-size:clamp(26px,6vw,36px);margin-bottom:8px}
 .hinweis{color:var(--leise);font-size:15px;margin-bottom:20px}
+.hinweis.pflicht{color:var(--dark);font-weight:700;font-size:16px}
+.hinweis .marker{background:linear-gradient(transparent 58%,var(--lime) 58%);padding:0 3px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 
 /* Kacheln */
 .kacheln{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -277,7 +279,7 @@ const FRAGEN=[
   text:'Hast du schon eine Website?', hinweis:'',
   opt:[['','Noch nicht',''],['','Nur Instagram & Co.',''],['','Ja, selbst gebaut',''],['','Ja, möchte ein Update','']]},
  {k:'schmerz', kurz:'Was bremst', multi:true, max:2, min:2, blase:'Jetzt mal ehrlich.',
-  text:'Was bremst dich gerade?', hinweis:'Wähl die zwei, die dich am meisten betreffen.',
+  text:'Was bremst dich gerade?', hinweis:'Welche zwei treffen bei dir am meisten zu?',
   opt:[['','Technik ist nicht meins',''],['','Zu wenig Zeit dafür',''],['','Passt nicht mehr zu mir',''],['','Online kaum zu finden',''],['','Weiß nicht, wo anfangen','']]},
  {k:'herz', kurz:'Herzenssache', detail:{label:'Was genau machst du?', ph:'z. B. Lash-Lifting und Brows', pflicht:['Etwas ganz anderes']}, blase:'Jetzt zu deinem Business.',
   text:'Wofür schlägt dein Herz?', hinweis:'Wähl aus und erzähl kurz, was du machst.',
@@ -316,7 +318,7 @@ function frage(i){
   idx=i; const f=FRAGEN[i];
   $('fortText').textContent=`Frage ${i+1} von ${FRAGEN.length}`;
   $('fortBalken').style.width=((i+1)/FRAGEN.length*100)+'%';
-  $('blase').textContent=f.blase; $('frageText').textContent=f.text; $('frageHinweis').textContent=f.hinweis;
+  $('blase').textContent=f.blase; $('frageText').textContent=f.text; $('frageHinweis').textContent=f.hinweis; $('frageHinweis').classList.toggle('pflicht',!!f.min); if(f.min) $('frageHinweis').innerHTML='<span class="marker">'+f.hinweis+'</span>';
   const box=$('kacheln'); box.innerHTML='';
   f.opt.forEach(([ic,t,s])=>{
     const b=document.createElement('button'); b.type='button'; b.className='kachel';
@@ -340,9 +342,10 @@ function frage(i){
   zeige('frage');
 }
 function pruefeWeiter(f){
-  if(f.detail){ const a=antw[f.k]; $('weiter').disabled=!a||(f.detail.pflicht.includes(a)&&!(antw[f.k+'Detail']||'').trim()); return; }
+  if(f.detail){ $('weiter').textContent='Weiter →'; const a=antw[f.k]; $('weiter').disabled=!a||(f.detail.pflicht.includes(a)&&!(antw[f.k+'Detail']||'').trim()); return; }
   const l=antw[f.k]||[]; const leerEigen=f.eigen && l.includes(f.eigen) && !(antw[f.k+'Eigen']||'').trim();
   $('weiter').disabled=(!l.length&&!f.leerOk)||leerEigen||(f.min&&l.length<f.min);
+  $('weiter').textContent=(f.min&&l.length<f.min)?`Noch ${f.min-l.length} auswählen`:'Weiter →';
 }
 function anzeige(f,sep=', '){ if(f.detail){ const d=(antw[f.k+'Detail']||'').trim(); return antw[f.k]+(d?' · '+d:''); } let a=antw[f.k]; if(f.multi&&(!a||!a.length)) return 'keine'; if(!Array.isArray(a)) return a; if(f.eigen) a=a.map(x=>x===f.eigen?(antw[f.k+'Eigen']||'').trim():x); return a.join(sep); }
 function waehle(f,t,b){
