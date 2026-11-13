@@ -101,7 +101,7 @@ body.auf-start{background:var(--start-bg);color:var(--start-fg)}
 .frage{font-size:clamp(26px,6vw,36px);margin-bottom:8px}
 .hinweis{color:var(--leise);font-size:15px;margin-bottom:20px}
 .hinweis.pflicht{color:var(--dark);font-weight:700;font-size:16px}
-.hinweis .marker{background:linear-gradient(transparent 58%,var(--lime) 58%);padding:0 3px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.hinweis .marker{font-weight:800;color:var(--dark);background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20200%2024'%20preserveAspectRatio%3D'none'%3E%3Cpath%20d%3D'M3%206%20C%2030%201%2C%2070%202%2C%20110%203%20S%20175%201%2C%20197%204%20L%20195%2017%20C%20170%2015%2C%20130%2019%2C%2095%2018%20S%2030%2022%2C%206%2021%20Z'%20fill%3D'%23C6FF3D'%2F%3E%3Cpath%20d%3D'M14%2021%20C%2060%2019%2C%20120%2018%2C%20186%2015'%20stroke%3D'%23C6FF3D'%20stroke-width%3D'2'%20fill%3D'none'%20opacity%3D'.55'%2F%3E%3C%2Fsvg%3E") no-repeat 0 100%/100% .62em;padding:0 .1em .1em;-webkit-box-decoration-break:clone;box-decoration-break:clone} /* Pinselstrich Lime, 13.11. (Zwei C) */
 
 /* Kacheln */
 .kacheln{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -288,13 +288,13 @@ const FRAGEN=[
   text:'Hast du schon eine Website?', hinweis:'',
   opt:[['','Noch nicht',''],['','Nur Instagram & Co.',''],['','Ja, selbst gebaut',''],['','Ja, möchte ein Update','']]},
  {k:'schmerz', kurz:'Was bremst', multi:true, max:2, min:2, blase:'Jetzt mal ehrlich.',
-  text:'Was bremst dich gerade?', hinweis:'Welche zwei treffen bei dir am meisten zu?',
+  text:'Was bremst dich gerade?', hinweis:'Welche zwei treffen bei dir am meisten zu?', mark:'Welche zwei',
   opt:[['','Technik ist nicht meins',''],['','Zu wenig Zeit dafür',''],['','Passt nicht mehr zu mir',''],['','Online kaum zu finden',''],['','Weiß nicht, wo anfangen','']]},
  {k:'herz', kurz:'Herzenssache', detail:{label:'Was genau machst du?', ph:'z. B. Lash-Lifting und Brows', pflicht:['Etwas ganz anderes']}, blase:'Jetzt zu deinem Business.',
   text:'Wofür schlägt dein Herz?', hinweis:'Wähl aus und erzähl kurz, was du machst.',
   opt:[['','Beauty & Styling',''],['','Medical Beauty',''],['','Wellness & Spa',''],['','Etwas ganz anderes','Auch das passt!']]},
  {k:'gefuehl', kurz:'Wirkung', multi:true, max:2, eigen:'Passt nicht? Dein Wort', blase:'Deine Website, so persönlich wie du.',
-  text:'Wie soll deine Website wirken?', hinweis:'Wähl bis zu zwei.',
+  text:'Wie soll deine Website wirken?', hinweis:'Wähl bis zu zwei.', mark:'bis zu zwei',
   opt:[['','Herzlich & warm',''],
        ['','Elegant & edel',''],
        ['','Natürlich & geerdet',''],
@@ -327,7 +327,7 @@ function frage(i){
   idx=i; const f=FRAGEN[i];
   $('fortText').textContent=`Frage ${i+1} von ${FRAGEN.length}`;
   $('fortBalken').style.width=((i+1)/FRAGEN.length*100)+'%';
-  $('blase').textContent=f.blase; $('frageText').textContent=f.text; $('frageHinweis').textContent=f.hinweis; $('frageHinweis').classList.toggle('pflicht',!!f.min); if(f.min) $('frageHinweis').innerHTML='<span class="marker">'+f.hinweis+'</span>';
+  $('blase').textContent=f.blase; $('frageText').textContent=f.text; $('frageHinweis').textContent=f.hinweis; $('frageHinweis').classList.toggle('pflicht',!!(f.min||f.mark)); if(f.mark) $('frageHinweis').innerHTML=f.hinweis.replace(f.mark,'<span class="marker">'+f.mark+'</span>');
   const box=$('kacheln'); box.innerHTML='';
   f.opt.forEach(([ic,t,s])=>{
     const b=document.createElement('button'); b.type='button'; b.className='kachel';
